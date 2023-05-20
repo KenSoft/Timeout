@@ -1,4 +1,0 @@
-exports.BOT_TOKEN = "MTEwOTQ2MzgyNjU4MTE3NjM1MQ.G3w0yy.Bh239ua6iF57Q8_lQSX4HMpqzycJa9r8yqxJVA";
-exports.clientId = "1109463826581176351";
-exports.guildId = "1073078411976781884";
-.
