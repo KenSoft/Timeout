@@ -1,9 +1,18 @@
+var moment = require('moment');
+const key = require('../key');
+const { initializeApp } = require('firebase/app');
+const { getFirestore } = require('firebase/firestore');
+const { getDatabase, ref, set } = require('firebase/database');
 const { SlashCommandBuilder } = require('discord.js');
+
+
+initializeApp(key.firebaseConfig);
+let database = getDatabase();
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('timeoutwithlove')
-		.setDescription('Go to Bed!')
+		.setDescription('Nói tiếng Việt không được')
 		.addIntegerOption(option =>
 		option.setName('time')
 			.setDescription('Time in minute until timeout')
@@ -13,6 +22,9 @@ module.exports = {
 			.setMaxValue(1440)),
 	async execute(interaction) {
 		const time = interaction.options.getInteger('time')
-		await interaction.reply(`Reply! ${time}`);
+		await interaction.reply(`Reply! ${time} `+moment().format('YYYY-MM-DD-hh-mm-ss'));
+		set(ref(database, 'timeout/'), {
+			"tol":time*60
+		  });
 	},
 };

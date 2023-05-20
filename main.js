@@ -1,9 +1,15 @@
+const { initializeApp } = require('firebase/app');
+const { getFirestore } = require('firebase/firestore');
+const { getDatabase, ref, get, child, set } = require('firebase/database');
 var moment = require('moment');
 const fs = require('node:fs');
 const path = require('node:path');
 const Discord = require("discord.js");
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const key = require('./key');
+
+initializeApp(key.firebaseConfig);
+let database = ref(getDatabase());
 
 
 const client = new Discord.Client({
@@ -61,7 +67,30 @@ client.on('ready', () => {
  //console.log(channel);
 });
 
-//const mainLoop = setInterval(function() {
-//}, 2000);
+const mainLoop = setInterval(function() {
+	console.log("Running");
+	get(child(database, `timeout/tol`)).then((snapshot) => {
+	  if (snapshot.exists()) {
+	    console.log(snapshot.val());
+	    set(ref(database, 'timeout/'), {
+			  "tol":20
+			})
+			.then(() => {
+			  // Data saved successfully!
+			})
+			.catch((error) => {
+			  // The write failed...
+			});
+
+
+
+	  } else {
+	    console.log("No data available");
+	  }
+	}).catch((error) => {
+	  console.error(error);
+	});
+
+}, 1000);
 
 //clearInterval(interval); 
