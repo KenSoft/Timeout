@@ -5,11 +5,12 @@ var moment = require('moment');
 const fs = require('node:fs');
 const path = require('node:path');
 const Discord = require("discord.js");
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, BaseInteraction } = require('discord.js');
 const key = require('./key');
 
 initializeApp(key.firebaseConfig);
 let database = ref(getDatabase());
+let member = null;
 
 
 const client = new Discord.Client({
@@ -59,6 +60,8 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
+
+
 client.login(key.BOT_TOKEN);
 
 client.on('ready', () => {
@@ -66,30 +69,36 @@ client.on('ready', () => {
  
  //console.log(channel);
 });
+let guild = client.guilds.cache.get('Guild ID');
+let member = guild.members.cache.get('User ID');
 
 const mainLoop = setInterval(function() {
 	console.log("Running");
 	get(child(database, `timeout/tol`)).then((snapshot) => {
 	  if (snapshot.exists()) {
 	    console.log(snapshot.val());
-	    set(ref(database, 'timeout/'), {
-			  "tol":20
-			})
-			.then(() => {
-			  // Data saved successfully!
-			})
-			.catch((error) => {
-			  // The write failed...
-			});
-
-
-
+	    if(snapshot.val()>0){
+		    set(child(database, 'timeout/'), {
+				  "tol":snapshot.val()-1
+				})
+				.then(() => {
+				  // Data saved successfully!
+				})
+				.catch((error) => {
+				  // The write failed...
+				});
+			}
+			if(snapshot.val()==1){
+				//ban
+				member.timeout(120_000);
+			}
 	  } else {
 	    console.log("No data available");
 	  }
 	}).catch((error) => {
 	  console.error(error);
 	});
+
 
 }, 1000);
 

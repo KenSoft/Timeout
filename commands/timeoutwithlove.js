@@ -25,6 +25,6 @@ module.exports = {
 		await interaction.reply(`Reply! ${time} `+moment().format('YYYY-MM-DD-hh-mm-ss'));
 		set(ref(database, 'timeout/'), {
 			"tol":time*60
-		  });
+		});
 	},
 };
