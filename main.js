@@ -21,7 +21,6 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 let database = ref(getDatabase());
-let member = null;
 
 
 const client = new Discord.Client({
@@ -79,37 +78,8 @@ client.on('ready', () => {
  
  //console.log(channel);
 });
-let guild = client.guilds.cache.get('Guild ID');
-let member = guild.members.cache.get('User ID');
-
-const mainLoop = setInterval(function() {
-	console.log("Running");
-	get(child(database, `timeout/tol`)).then((snapshot) => {
-	  if (snapshot.exists()) {
-	    console.log(snapshot.val());
-	    if(snapshot.val()>0){
-		    set(child(database, 'timeout/'), {
-				  "tol":snapshot.val()-1
-				})
-				.then(() => {
-				  // Data saved successfully!
-				})
-				.catch((error) => {
-				  // The write failed...
-				});
-			}
-			if(snapshot.val()==1){
-				//ban
-				member.timeout(120_000);
-			}
-	  } else {
-	    console.log("No data available");
-	  }
-	}).catch((error) => {
-	  console.error(error);
-	});
 
 
-}, 1000);
+
 
 //clearInterval(interval); 
