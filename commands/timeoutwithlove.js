@@ -32,7 +32,10 @@ client.on('ready', () => {
  
  //console.log(channel);
 });
-const channel = client.channels.cache.get('1003726687789387868');
+
+
+
+
 initializeApp(firebaseConfig);
 let database = ref(getDatabase());
 
@@ -54,6 +57,8 @@ module.exports = {
 			.setMinValue(0)
 			.setMaxValue(1440)),
 	async execute(interaction) {
+		const channel = await client.channels.fetch("1003726687789387868")
+		//channel.send("message")
 		let member = interaction.options.getMember('target');
 		let memberId = member.id.toString();
 		const time = interaction.options.getInteger('time')
@@ -100,16 +105,15 @@ module.exports = {
 								until.set('second', 0);
 								timeoutSec = until.diff(a, 'seconds'); // 1
 							}
-							channel.send('Timed out <@'+member.id+'> for "+timeoutSec+" second(s) - Until 8 AM.');
+							channel.send("Timed out <@"+member.id+"> for "+timeoutSec+" second(s) - Until 8 AM.");
 							member.timeout(timeoutSec*1000);
 							clearInterval(mainLoop);
 						}
-						
 						if(snapshot.val()==0){
 							clearInterval(mainLoop);
 						}
 						if(snapshot.val()==60){
-							channel.send('Timing out <@'+member.id+'> in 1 minutes!');
+							channel.send('Timing out <@'+member.id+'> in 1 minute!');
 						}
 						if(snapshot.val()==300){
 							channel.send('Timing out <@'+member.id+'> in 5 minutes!');
