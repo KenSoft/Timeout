@@ -60,7 +60,7 @@ module.exports = {
 		const channelBot = await client.channels.fetch("1003726687789387868")
 		var channel = [];
 		var fetchedChannel = [];
-		for (var i = 0; i < 5; i++) {
+		for (var i = 0; i < 6; i++) {
 			channel[i] = await client.channels.fetch(channelArray[i])
 			fetchedChannel[i] = await channel[i].fetch(true)
 		}
