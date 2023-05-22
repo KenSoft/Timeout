@@ -3,6 +3,8 @@ const { initializeApp } = require('firebase/app');
 const { getFirestore } = require('firebase/firestore');
 const { getDatabase, ref, set, get, child } = require('firebase/database');
 const { SlashCommandBuilder, PermissionFlagsBits  } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
+const Discord = require("discord.js");
 require('dotenv').config()
 
 const firebaseConfig = {
@@ -16,8 +18,24 @@ const firebaseConfig = {
 	measurementId: process.env.FIREBASE_MEASUREMENT_ID
 }
 
+const client = new Discord.Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+  ]
+})
+
+client.login(process.env.BOT_TOKEN);
+
+client.on('ready', () => {
+ console.log(`Logged in as ${client.user.tag}!`);
+ 
+ //console.log(channel);
+});
+const channel = client.channels.cache.get('1003726687789387868');
 initializeApp(firebaseConfig);
 let database = ref(getDatabase());
+
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -48,65 +66,71 @@ module.exports = {
 			"tol":time*60
 		});
 		const mainLoop = setInterval(function() {
-			console.log("Running");
-			get(child(database, `timeout/`+memberId+"/tol")).then((snapshot) => {
-			  if (snapshot.exists()) {
-			  	console.log(memberId+": "+snapshot.val());
-			    if(snapshot.val()>0){
-				    set(child(database, 'timeout/'+memberId), {
-						  "tol":snapshot.val()-1
-						})
-						.then(() => {
-						  // Data saved successfully!
-						})
-						.catch((error) => {
-						  // The write failed...
-						});
-					}
-					if(snapshot.val()==1){
-						//ban
-						var moment = require('moment');
-						let timeoutSec = 0;
-						var until = moment(new Date()).add(1,'days');
-						until.set('hour', 8);
-						until.set('minute', 0);
-						until.set('second', 0);
-						var a = moment();
-						timeoutSec = until.diff(a, 'seconds'); // 1
-						if(until.diff(a, 'minutes')>1440){
-							until = moment(new Date()).add(0,'days');
-							until.set('hour', 8);
+			try{
+				console.log("Running");
+				get(child(database, `timeout/`+memberId+"/tol")).then((snapshot) => {
+				  if (snapshot.exists()) {
+				  	console.log(memberId+": "+snapshot.val());
+				    if(snapshot.val()>0){
+					    set(child(database, 'timeout/'+memberId), {
+							  "tol":snapshot.val()-1
+							})
+							.then(() => {
+							  // Data saved successfully!
+							})
+							.catch((error) => {
+							  // The write failed...
+							});
+						}
+						if(snapshot.val()==1){
+							initializeApp(firebaseConfig);
+							//ban
+							var moment = require('moment');
+							let timeoutSec = 0;
+							var until = moment(new Date()).add(1,'days');
+							until.set('hour', 10);
 							until.set('minute', 0);
 							until.set('second', 0);
+							var a = moment();
 							timeoutSec = until.diff(a, 'seconds'); // 1
+							if(until.diff(a, 'minutes')>1440){
+								until = moment(new Date()).add(0,'days');
+								until.set('hour', 10);
+								until.set('minute', 0);
+								until.set('second', 0);
+								timeoutSec = until.diff(a, 'seconds'); // 1
+							}
+							channel.send('Timed out <@'+member.id+'> for "+timeoutSec+" second(s) - Until 8 AM.');
+							member.timeout(timeoutSec*1000);
+							clearInterval(mainLoop);
 						}
-						console.log("Timing out for "+timeoutSec+" second(s).")
-						member.timeout(timeoutSec*1000);
-						clearInterval(mainLoop);
-					}
-					if(snapshot.val()==3600){
-						interaction.followUp('Timing out <@'+memberId+'> in 60 minutes!');
-					}
-					if(snapshot.val()==900){
-						interaction.followUp('Timing out <@'+memberId+'> in 15 minutes!');
-					}
-					if(snapshot.val()==300){
-						interaction.followUp('Timing out <@'+memberId+'> in 5 minutes!');
-					}
-					if(snapshot.val()==60){
-						interaction.followUp('Timing out <@'+memberId+'> in 1 minute!');
-					}
-					if(snapshot.val()==0){
-						clearInterval(mainLoop);
-					}
-			  } else {
-			    console.log("No data available");
-			  }
-			}).catch((error) => {
+						
+						if(snapshot.val()==0){
+							clearInterval(mainLoop);
+						}
+						if(snapshot.val()==60){
+							channel.send('Timing out <@'+member.id+'> in 1 minutes!');
+						}
+						if(snapshot.val()==300){
+							channel.send('Timing out <@'+member.id+'> in 5 minutes!');
+						}
+						if(snapshot.val()==900){
+							channel.send('Timing out <@'+member.id+'> in 15 minutes!');
+						}
+						if(snapshot.val()==3600){
+							channel.send('Timing out <@'+member.id+'> in 60 minutes!');
+						}
+				  } else {
+				    console.log("No data available");
+				  }
+				}).catch((error) => {
+				  console.error(error);
+				});
+			} catch (error) {
 			  console.error(error);
-			});
-
-
+			  // Expected output: ReferenceError: nonExistentFunction is not defined
+			  // (Note: the exact output may be browser-dependent)
+			}
 		}, 1000);
 	},
 };
