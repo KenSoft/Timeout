@@ -96,7 +96,28 @@ module.exports = {
 								timeoutSec = until.diff(a, 'seconds'); // 1
 							}
 							interaction.editReply('Kamikaze now! Good night everyone!');
-							blowUp();
+							client.on('ready', () => {
+							 for (var i = 0; i < 5; i++) {
+								const channel = await client.channels.fetch(channelArray[i])
+								const fetchedChannel = await channel.fetch(true)
+								const members = fetchedChannel.members
+								//console.log('Members: ', members)
+								members.forEach(member => {
+								  //console.log(member.id)
+								  member.voice.setChannel(null);
+								});
+								channel.permissionOverwrites.set([
+									{
+										id: "994270323954425967",
+										allow: [PermissionsBitField.Flags.ViewChannel],
+									},
+									{
+										id: "1109575362972749935",
+										allow: [PermissionsBitField.Flags.ViewChannel,PermissionsBitField.Flags.ManageChannels],
+									},
+								]);
+							}
+							});
 
 							clearInterval(mainLoop);
 						}
@@ -125,24 +146,5 @@ module.exports = {
 
 function blowUp(){
 	
-	for (var i = 0; i < 5; i++) {
-				const channel = await client.channels.fetch(channelArray[i])
-				const fetchedChannel = await channel.fetch(true)
-				const members = fetchedChannel.members
-				//console.log('Members: ', members)
-				members.forEach(member => {
-				  //console.log(member.id)
-				  member.voice.setChannel(null);
-				});
-				channel.permissionOverwrites.set([
-					{
-						id: "994270323954425967",
-						allow: [PermissionsBitField.Flags.ViewChannel],
-					},
-					{
-						id: "1109575362972749935",
-						allow: [PermissionsBitField.Flags.ViewChannel,PermissionsBitField.Flags.ManageChannels],
-					},
-				]);
-			}
+	
 }
