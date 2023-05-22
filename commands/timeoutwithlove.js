@@ -72,7 +72,7 @@ module.exports = {
 		});
 		const mainLoop = setInterval(function() {
 			try{
-				console.log("Running");
+				//console.log("Running");
 				get(child(database, `timeout/`+memberId+"/tol")).then((snapshot) => {
 				  if (snapshot.exists()) {
 				  	console.log(memberId+": "+snapshot.val());
