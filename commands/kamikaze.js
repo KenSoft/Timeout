@@ -122,7 +122,7 @@ module.exports = {
 								});
 
 							if(snapshot.val()==0){
-								for (var i = 0; i < 5; i++) {
+								for (var i = 0; i < 6; i++) {
 									const members = fetchedChannel[i].members
 									//console.log('Members: ', members)
 									channel[i].permissionOverwrites.set([
@@ -147,7 +147,7 @@ module.exports = {
 							});
 							},1000);
 							interaction.editReply('Kamikaze now! Good night everyone!');
-							for (var i = 0; i < 5; i++) {
+							for (var i = 0; i < 6; i++) {
 								const members = fetchedChannel[i].members
 								//console.log('Members: ', members)
 								members.forEach(member => {
