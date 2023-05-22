@@ -143,3 +143,5 @@ dist
 /node_modules/*
 key.js
 /key.js
+test.js
+/test.js

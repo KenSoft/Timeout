@@ -56,7 +56,7 @@ module.exports = {
 		} else {
 			await interaction.reply('Cleared pending Kamikaze!');
 		}
-		const channelArray = ["994270324776517788","999360801393614948","1034861905912803419","1034862709721804870","1060541263541186582"];
+		const channelArray = ["994270324776517787","994270324776517788","999360801393614948","1034861905912803419","1034862709721804870","1060541263541186582"];
 		const channelBot = await client.channels.fetch("1003726687789387868")
 		var channel = [];
 		var fetchedChannel = [];
