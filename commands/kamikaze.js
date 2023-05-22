@@ -57,6 +57,14 @@ module.exports = {
 			await interaction.reply('Cleared pending Kamikaze!');
 		}
 		const channelArray = ["994270324776517788","999360801393614948","1034861905912803419","1034862709721804870","1060541263541186582"];
+		const channelBot = await client.channels.fetch("1003726687789387868")
+		var channel = [];
+		var fetchedChannel = [];
+		for (var i = 0; i < 5; i++) {
+			channel[i] = await client.channels.fetch(channelArray[i])
+			fetchedChannel[i] = await channel[i].fetch(true)
+		}
+			
 		set(child(database, 'kamikaze/'), {
 			"time":time*60
 		});
@@ -66,7 +74,9 @@ module.exports = {
 			
 			get(child(database, `kamikaze/time`)).then((snapshot) => {
 				  if (snapshot.exists()) {
+				  	
 				    if(snapshot.val()>0){
+				    	interaction.editReply('Kamikaze in '+snapshot.val()+' second(s)!');
 					    set(child(database, 'kamikaze/'), {
 							  "time":snapshot.val()-1
 							})
@@ -95,21 +105,59 @@ module.exports = {
 								until.set('second', 0);
 								timeoutSec = until.diff(a, 'seconds'); // 1
 							}
+							set(child(database, 'comeback/'), {
+								"time":timeoutSec
+							});
+							const subLoop = setInterval(function() {
+							get(child(database, `comeback/time`)).then((snapshot) => {
+				  			if (snapshot.exists()) {
+				  				set(child(database, 'comeback/'), {
+								  "time":snapshot.val()-1
+								})
+								.then(() => {
+								  // Data saved successfully!
+								})
+								.catch((error) => {
+								  // The write failed...
+								});
+
+							if(snapshot.val()==0){
+								for (var i = 0; i < 5; i++) {
+									const members = fetchedChannel[i].members
+									//console.log('Members: ', members)
+									channel[i].permissionOverwrites.set([
+										{
+											id: "994270323954425967",
+											allow: [PermissionsBitField.Flags.ViewChannel],
+										},
+										{
+											id: "1109575362972749935",
+											allow: [PermissionsBitField.Flags.ViewChannel,PermissionsBitField.Flags.ManageChannels],
+										},
+									]);
+								}
+								channelBot.send("Returning All Channels...")
+								clearInterval(subLoop);
+							}
+				  			} else {
+							console.log("No data available");
+							  }
+							}).catch((error) => {
+							  console.error(error);
+							});
+							},1000);
 							interaction.editReply('Kamikaze now! Good night everyone!');
-							client.on('ready', () => {
-							 for (var i = 0; i < 5; i++) {
-								const channel = await client.channels.fetch(channelArray[i])
-								const fetchedChannel = await channel.fetch(true)
-								const members = fetchedChannel.members
+							for (var i = 0; i < 5; i++) {
+								const members = fetchedChannel[i].members
 								//console.log('Members: ', members)
 								members.forEach(member => {
 								  //console.log(member.id)
 								  member.voice.setChannel(null);
 								});
-								channel.permissionOverwrites.set([
+								channel[i].permissionOverwrites.set([
 									{
 										id: "994270323954425967",
-										allow: [PermissionsBitField.Flags.ViewChannel],
+										deny: [PermissionsBitField.Flags.ViewChannel],
 									},
 									{
 										id: "1109575362972749935",
@@ -117,11 +165,9 @@ module.exports = {
 									},
 								]);
 							}
-							});
-
-							clearInterval(mainLoop);
+							
 						}
-						interaction.editReply('Kamikaze in '+snapshot.val()+' second(s)!');
+						
 						if(snapshot.val()==0){
 							clearInterval(mainLoop);
 						}
@@ -138,13 +184,15 @@ module.exports = {
 			  // Expected output: ReferenceError: nonExistentFunction is not defined
 			  // (Note: the exact output may be browser-dependent)
 			}
+							
+
 		}, 1000);
-			
+	
 	},
 
 };
 
 function blowUp(){
-	
+
 	
 }
