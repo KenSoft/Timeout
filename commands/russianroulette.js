@@ -60,7 +60,9 @@ module.exports = {
       }
       count++;
     });
+    console.log(count);
     var random2 = between(0,count);
+    console.log(random2);
     if(hasSpecialPerson==1 && random1<70){
       target=member;
     } else {
