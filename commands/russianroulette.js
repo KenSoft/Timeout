@@ -61,7 +61,9 @@ module.exports = {
       count++;
     });
     var random2 = between(0,count);
-    if(hasSpecialPerson==1 && random1<70){
+    if(hasSpecialPerson==1 && random1<75){
+      console.log("Lock!");
+      console.log(specialMemberObject);
       target=specialMemberObject;
     } else {
         members.forEach(member => {
